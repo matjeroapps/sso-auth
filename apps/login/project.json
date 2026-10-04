@@ -30,9 +30,9 @@
       "outputs": ["{projectRoot}/.next/standalone"]
     },
     "pack": {
-      "description": "Builds a local Docker image for the ZITADEL Login UI (zitadel/zitadel-login:local). Requires Docker daemon.",
+      "description": "Builds the MatjerHub SSO Login image from this checkout (matjerhub/sso-auth-login:local). Requires Docker daemon.",
       "dependsOn": ["build"],
-      "command": "docker build -f apps/login/Dockerfile -t zitadel/zitadel-login:local apps/login",
+      "command": "docker build -f apps/login/Dockerfile -t ${SSO_AUTH_LOGIN_IMAGE:-matjerhub/sso-auth-login:local} apps/login",
       "cache": false,
       "inputs": [
         "default",
@@ -43,9 +43,9 @@
       ]
     },
     "pack-fips": {
-      "description": "Builds a local FIPS-hardened Docker image for the ZITADEL Login UI (zitadel/zitadel-login:local-fips). Requires Docker daemon.",
+      "description": "Builds a local FIPS-hardened MatjerHub SSO Login image (matjerhub/sso-auth-login:local-fips). Requires Docker daemon.",
       "dependsOn": ["build"],
-      "command": "docker build -f apps/login/Dockerfile.fips -t zitadel/zitadel-login:local-fips apps/login",
+      "command": "docker build -f apps/login/Dockerfile.fips -t ${SSO_AUTH_LOGIN_FIPS_IMAGE:-matjerhub/sso-auth-login:local-fips} apps/login",
       "cache": false,
       "inputs": [
         "default",

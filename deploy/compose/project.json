@@ -39,6 +39,38 @@
                 ]
             }
         },
+        "local-build": {
+            "description": "Builds both MatjerHub SSO Docker images from this checkout without pulling published ZITADEL application images.",
+            "dependsOn": [
+                "@zitadel/api:pack",
+                "@zitadel/login:pack"
+            ],
+            "executor": "nx:run-commands",
+            "options": {
+                "cwd": "{workspaceRoot}",
+                "command": "docker image inspect ${SSO_AUTH_API_IMAGE:-matjerhub/sso-auth-api:local} ${SSO_AUTH_LOGIN_IMAGE:-matjerhub/sso-auth-login:local} >/dev/null"
+            }
+        },
+        "local-up": {
+            "description": "Builds the local API and Login images, then starts the complete SSO stack.",
+            "dependsOn": [
+                "local-build",
+                "test-config"
+            ],
+            "executor": "nx:run-commands",
+            "options": {
+                "cwd": "{projectRoot}",
+                "command": "docker compose --env-file .env.example -p matjerhub-sso-local up -d --wait"
+            }
+        },
+        "local-down": {
+            "description": "Stops the local SSO stack without deleting its database volume.",
+            "executor": "nx:run-commands",
+            "options": {
+                "cwd": "{projectRoot}",
+                "command": "docker compose --env-file .env.example -p matjerhub-sso-local down"
+            }
+        },
         "test-e2e": {
             "description": "Runs the Playwright test suite (wiring.spec.ts + smoke.spec.ts) against the running compose stack via localhost:8888 through Traefik. Covers login, console, OIDC, SAML, API v1 REST, gRPC h2c, gRPC-web, API v2 REST (gRPC-gateway JSON) HTTP/1.1 and HTTP/2. Run 'pnpm exec playwright install chromium' once before using this target.",
             "executor": "nx:run-commands",

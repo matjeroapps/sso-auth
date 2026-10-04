@@ -1,4 +1,4 @@
-# Test overlay: replaces published images with locally-built ones.
+# Test overlay: keeps test-only bootstrap settings separate from the base stack.
 # Used by the NX smoke-test targets (@zitadel/compose:test-run, :test-full, :stop).
 #
 # All test traffic flows through the Traefik proxy (port 8888)
@@ -10,7 +10,7 @@
 
 services:
   zitadel-api:
-    image: zitadel/zitadel:local
+    image: ${SSO_AUTH_API_IMAGE:-matjerhub/sso-auth-api:local}
     environment:
       # Set a known password for the initial admin so Playwright smoke tests
       # can authenticate without a setup API call.
@@ -23,4 +23,4 @@ services:
       ZITADEL_FIRSTINSTANCE_PATPATH: /zitadel/bootstrap/admin.pat
 
   zitadel-login:
-    image: zitadel/zitadel-login:local
+    image: ${SSO_AUTH_LOGIN_IMAGE:-matjerhub/sso-auth-login:local}

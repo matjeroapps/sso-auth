@@ -1,4 +1,8 @@
 FROM node:24-alpine
+
+LABEL org.opencontainers.image.title="MatjerHub SSO Login" \
+      org.opencontainers.image.description="MatjerHub-owned login UI built from the sso-auth source repository"
+
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
