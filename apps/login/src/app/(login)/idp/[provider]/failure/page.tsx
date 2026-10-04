@@ -57,8 +57,8 @@ export default async function Page(props: {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="loginError.title" namespace="idp" />
         </h1>
       </div>

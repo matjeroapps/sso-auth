@@ -7,8 +7,10 @@ import { Translated } from "./translated";
 
 const cardClasses = (alreadyAdded: boolean) =>
   clsx(
-    "relative bg-background-light-400 dark:bg-background-dark-400 group block space-y-1.5 rounded-md px-5 py-3  border border-divider-light dark:border-divider-dark transition-all ",
-    alreadyAdded ? "opacity-50 cursor-default" : "hover:shadow-lg hover:dark:bg-white/10",
+    "relative bg-matjerhub-surface group block rounded-xl p-4 border border-matjerhub-border transition-colors text-matjerhub-foreground",
+    alreadyAdded
+      ? "opacity-50 cursor-default"
+      : "hover:bg-matjerhub-surface-muted cursor-pointer hover:border-matjerhub-primary",
   );
 
 const LinkWrapper = ({ alreadyAdded, children, link }: { alreadyAdded: boolean; children: ReactNode; link: string }) => {

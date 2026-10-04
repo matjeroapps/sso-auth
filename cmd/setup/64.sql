@@ -10,6 +10,22 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
+DO $$ BEGIN
+    CREATE TYPE eventstore.command2 AS (
+        instance_id TEXT
+        , aggregate_type TEXT
+        , aggregate_id TEXT
+        , command_type TEXT
+        , revision INT2
+        , payload JSONB
+        , creator TEXT
+        , owner TEXT
+        , enforce_owner BOOLEAN
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 CREATE OR REPLACE FUNCTION eventstore.commands_to_events(commands eventstore.command2[]) 
     RETURNS SETOF eventstore.events2 
     LANGUAGE 'plpgsql'

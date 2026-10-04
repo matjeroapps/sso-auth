@@ -101,7 +101,7 @@ export function SessionItem({ session, reload, requestId }: { session: Session; 
                 }
               }
             }}
-            className="group border-divider-light bg-background-light-400 dark:bg-background-dark-400 flex flex-row items-center rounded-md border px-4 py-2 transition-all hover:shadow-lg dark:hover:bg-white/10"
+            className="group border-matjerhub-border hover:bg-matjerhub-surface-muted hover:border-matjerhub-primary bg-matjerhub-surface text-matjerhub-foreground mb-2 flex w-full cursor-pointer flex-row items-center rounded-xl border p-4 text-left transition-colors"
           >
             <div className="pr-4">
               <Avatar

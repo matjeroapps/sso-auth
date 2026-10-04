@@ -12,7 +12,8 @@ COPY apps/api/entrypoint.sh /app/entrypoint.sh
 COPY ./.artifacts/bin/${TARGETPLATFORM}/${BINARY} /app/zitadel
 
 RUN useradd -s "" --home / zitadel && \
-    chown zitadel /app/zitadel && \
+    mkdir -p /zitadel/bootstrap /tmp/feature-026 && \
+    chown -R zitadel /app /zitadel /tmp/feature-026 && \
     chmod +x /app/zitadel && \
     chown zitadel /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
@@ -29,6 +30,8 @@ FROM scratch AS final
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 COPY --from=builder /app/zitadel /app/zitadel
+COPY --from=builder /zitadel /zitadel
+COPY --from=builder /tmp /tmp
 
 HEALTHCHECK NONE
 EXPOSE 8080

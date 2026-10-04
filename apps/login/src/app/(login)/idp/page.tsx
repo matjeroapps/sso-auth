@@ -1,6 +1,5 @@
 import { DynamicTheme } from "@/components/dynamic-theme";
 import { SignInWithIdp } from "@/components/sign-in-with-idp";
-import { Translated } from "@/components/translated";
 import { getServiceConfig } from "@/lib/service-url";
 import { getActiveIdentityProviders, getBrandingSettings } from "@/lib/zitadel";
 import { Metadata } from "next";
@@ -29,13 +28,9 @@ export default async function Page(props: { searchParams: Promise<Record<string 
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
-          <Translated i18nKey="title" namespace="idp" />
-        </h1>
-        <p className="ztdl-p">
-          <Translated i18nKey="description" namespace="idp" />
-        </p>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">Join an organization</h1>
+        <p className="font-body text-matjerhub-muted-foreground text-base">Sign in with your organization's provider</p>
       </div>
 
       <div className="w-full">

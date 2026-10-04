@@ -1,4 +1,4 @@
-import { ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 import { ReactNode } from "react";
 
@@ -10,25 +10,26 @@ type Props = {
 export enum AlertType {
   ALERT,
   INFO,
+  ERROR,
 }
 
-const yellow =
-  "border-yellow-600/40 dark:border-yellow-500/20 bg-yellow-200/30 text-yellow-600 dark:bg-yellow-700/20 dark:text-yellow-200";
-// const red =
-//   "border-red-600/40 dark:border-red-500/20 bg-red-200/30 text-red-600 dark:bg-red-700/20 dark:text-red-200";
-const neutral = "border-divider-light dark:border-divider-dark bg-black/5 text-gray-600 dark:bg-white/10 dark:text-gray-200";
+const yellow = "border-matjerhub-warning/20 bg-matjerhub-warning/10 text-matjerhub-warning";
+const red = "border-matjerhub-error/20 bg-matjerhub-error/10 text-matjerhub-error";
+const neutral = "border-matjerhub-border bg-matjerhub-muted-foreground/5 text-matjerhub-foreground";
 
 export function Alert({ children, type = AlertType.ALERT }: Props) {
   return (
     <div
-      className={clsx("flex scroll-px-40 flex-row items-center justify-center rounded-md border py-2 pr-2", {
+      className={clsx("flex flex-row items-start rounded-xl border p-3", {
         [yellow]: type === AlertType.ALERT,
         [neutral]: type === AlertType.INFO,
+        [red]: type === AlertType.ERROR,
       })}
     >
-      {type === AlertType.ALERT && <ExclamationTriangleIcon className="mr-2 ml-2 h-5 w-5 flex-shrink-0" />}
-      {type === AlertType.INFO && <InformationCircleIcon className="mr-2 ml-2 h-5 w-5 flex-shrink-0" />}
-      <span className="w-full text-sm">{children}</span>
+      {type === AlertType.ALERT && <ExclamationTriangleIcon className="mt-0.5 mr-3 h-5 w-5 flex-shrink-0" />}
+      {type === AlertType.INFO && <InformationCircleIcon className="mt-0.5 mr-3 h-5 w-5 flex-shrink-0" />}
+      {type === AlertType.ERROR && <XCircleIcon className="mt-0.5 mr-3 h-5 w-5 flex-shrink-0" />}
+      <span className="w-full text-sm leading-relaxed">{children}</span>
     </div>
   );
 }

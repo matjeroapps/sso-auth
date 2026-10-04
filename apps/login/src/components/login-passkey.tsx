@@ -1,5 +1,7 @@
 "use client";
 
+import { FingerPrintIcon } from "@heroicons/react/24/outline";
+
 import { coerceToArrayBuffer, coerceToBase64Url } from "@/helpers/base64";
 import { handleServerActionResponse } from "@/lib/client-utils";
 import { sendPasskey } from "@/lib/server/passkeys";
@@ -186,8 +188,13 @@ export function LoginPasskey({ loginName, sessionId, requestId, altPassword, org
   }
 
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col items-center">
       {samlData && <AutoSubmitForm url={samlData.url} fields={samlData.fields} />}
+
+      <div className="bg-matjerhub-primary/10 my-8 flex h-24 w-24 items-center justify-center rounded-full">
+        <FingerPrintIcon className={`text-matjerhub-primary h-12 w-12 ${loading ? "animate-pulse" : ""}`} />
+      </div>
+
       {error && (
         <div className="py-4">
           <Alert>{error}</Alert>

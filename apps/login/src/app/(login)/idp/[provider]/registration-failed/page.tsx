@@ -34,23 +34,23 @@ export default async function Page(props: { searchParams: Promise<Record<string 
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col items-center space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="registrationFailed.title" namespace="idp" />
         </h1>
-        <p className="ztdl-p">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="registrationFailed.description" namespace="idp" />
         </p>
 
-        <div className="w-full">
+        <div className="w-full pt-4">
           <Alert type={AlertType.ALERT}>
             <Translated i18nKey="registrationFailed.info" namespace="idp" />
           </Alert>
         </div>
 
         {postErrorRedirectUrl && (
-          <Link href={postErrorRedirectUrl}>
-            <Button className="bg-primary-light-500 hover:bg-primary-light-400 dark:bg-primary-dark-500 dark:hover:bg-primary-dark-400 w-full rounded-md px-4 py-3 text-center transition-all">
+          <Link href={postErrorRedirectUrl} className="w-full pt-4">
+            <Button className="w-full">
               <Translated i18nKey="registrationFailed.backToLogin" namespace="idp" />
             </Button>
           </Link>

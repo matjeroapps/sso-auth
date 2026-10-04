@@ -3,7 +3,6 @@ import { BackButton } from "@/components/back-button";
 import { ChooseSecondFactor } from "@/components/choose-second-factor";
 import { DynamicTheme } from "@/components/dynamic-theme";
 import { Translated } from "@/components/translated";
-import { UserAvatar } from "@/components/user-avatar";
 import { getSessionCookieById } from "@/lib/cookies";
 import { getServiceConfig } from "@/lib/service-url";
 import { loadMostRecentSession } from "@/lib/session";
@@ -71,22 +70,13 @@ export default async function Page(props: { searchParams: Promise<Record<string 
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
-          <Translated i18nKey="verify.title" namespace="mfa" />
-        </h1>
-        <p className="ztdl-p">
-          <Translated i18nKey="verify.description" namespace="mfa" />
-        </p>
-
-        {sessionFactors && (
-          <UserAvatar
-            loginName={loginName ?? sessionFactors.factors?.user?.loginName}
-            displayName={sessionFactors.factors?.user?.displayName}
-            showDropdown
-            searchParams={searchParams}
-          ></UserAvatar>
-        )}
+      <div className="flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">Verify your identity</h1>
+        <div className="flex items-center gap-2">
+          <p className="font-body text-matjerhub-muted-foreground text-base font-medium">
+            {loginName ?? sessionFactors?.factors?.user?.loginName}
+          </p>
+        </div>
       </div>
 
       <div className="w-full">

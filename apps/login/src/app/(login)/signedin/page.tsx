@@ -2,7 +2,6 @@ import { Alert, AlertType } from "@/components/alert";
 import { Button, ButtonVariants } from "@/components/button";
 import { DynamicTheme } from "@/components/dynamic-theme";
 import { Translated } from "@/components/translated";
-import { UserAvatar } from "@/components/user-avatar";
 import { resolveRedirectUri } from "@/lib/client";
 import { getMostRecentCookieWithLoginname, getSessionCookieById } from "@/lib/cookies";
 import { completeDeviceAuthorization } from "@/lib/server/device";
@@ -59,15 +58,15 @@ export default async function Page(props: { searchParams: Promise<any> }) {
       }).catch((err) => {
         return (
           <DynamicTheme branding={branding}>
-            <div className="flex flex-col space-y-4">
-              <h1>
+            <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+              <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
                 <Translated i18nKey="error.title" namespace="signedin" />
               </h1>
-              <p className="ztdl-p mb-6 block">
+              <p className="font-body text-matjerhub-muted-foreground text-base">
                 <Translated i18nKey="error.description" namespace="signedin" />
               </p>
-              <Alert>{err.message}</Alert>
             </div>
+            <Alert>{err.message}</Alert>
             <div className="w-full"></div>
           </DynamicTheme>
         );
@@ -93,20 +92,18 @@ export default async function Page(props: { searchParams: Promise<any> }) {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="title" namespace="signedin" data={{ user: sessionFactors?.factors?.user?.displayName }} />
         </h1>
-        <p className="ztdl-p mb-6 block">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="description" namespace="signedin" />
         </p>
-
-        <UserAvatar
-          loginName={loginName ?? sessionFactors?.factors?.user?.loginName}
-          displayName={sessionFactors?.factors?.user?.displayName ?? loginName}
-          showDropdown={!(requestId && requestId.startsWith("device_"))}
-          searchParams={searchParams}
-        />
+        <div className="mt-4 flex items-center gap-2">
+          <p className="font-body text-matjerhub-muted-foreground text-base font-medium">
+            {loginName ?? sessionFactors?.factors?.user?.loginName}
+          </p>
+        </div>
       </div>
 
       <div className="w-full">
