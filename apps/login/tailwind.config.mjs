@@ -51,8 +51,34 @@ export default {
         "12px": "12px",
         "14px": "14px",
       },
+      fontFamily: {
+        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+      },
       colors: {
         gray: colors.zinc,
+        // MatjerHub Design Tokens
+        matjerhub: {
+          primary: {
+            DEFAULT: '#0D5C46',
+            hover: '#0A4736',
+            active: '#073528',
+          },
+          secondary: '#0284C7',
+          success: '#10B981',
+          background: '#FAF8FF',
+          foreground: '#131B2E',
+          surface: {
+            DEFAULT: '#FFFFFF',
+            muted: '#F1EEF8',
+          },
+          muted: {
+            foreground: '#475569',
+          },
+          border: '#DED9E8',
+          error: '#DC2626',
+          warning: '#D97706',
+        },
         // Dynamic theme colors
         ...themeColors,
         // State colors

@@ -223,7 +223,7 @@ export function LoginOTP({ host, loginName, sessionId, requestId, organization, 
                 aria-label={t("verify.resendCode")}
                 disabled={loading}
                 type="button"
-                className="text-primary-light-500 hover:text-primary-light-400 dark:text-primary-dark-500 hover:dark:text-primary-dark-400 ml-4 cursor-pointer disabled:cursor-default disabled:text-gray-400 dark:disabled:text-gray-700"
+                className="text-matjerhub-primary hover:text-matjerhub-primary-hover ml-4 cursor-pointer font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={async () => {
                   setLoading(true);
                   const response = await updateSessionForOTPChallenge();
@@ -247,6 +247,7 @@ export function LoginOTP({ host, loginName, sessionId, requestId, organization, 
             label={t("verify.labels.code")}
             autoComplete="one-time-code"
             data-testid="code-text-input"
+            className="text-center text-lg font-bold tracking-widest tabular-nums"
           />
         </div>
 

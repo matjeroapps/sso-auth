@@ -106,11 +106,11 @@ export default async function Page(props: { searchParams: Promise<Record<string 
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="title" namespace="accounts" />
         </h1>
-        <p className="ztdl-p">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="description" namespace="accounts" />
         </p>
       </div>
@@ -119,11 +119,11 @@ export default async function Page(props: { searchParams: Promise<Record<string 
         <div className="flex w-full flex-col space-y-2">
           <SessionsList sessions={sessions} requestId={requestId} />
           <Link href={`/loginname?` + params}>
-            <div className="flex flex-row items-center rounded-md px-4 py-3 transition-all hover:bg-black/10 dark:hover:bg-white/10">
-              <div className="mr-4 flex h-8 w-8 flex-row items-center justify-center rounded-full bg-black/5 dark:bg-white/5">
+            <div className="border-matjerhub-border hover:bg-matjerhub-surface-muted hover:border-matjerhub-primary text-matjerhub-foreground flex cursor-pointer flex-row items-center rounded-xl border border-dashed px-4 py-3 transition-colors">
+              <div className="bg-matjerhub-primary/10 text-matjerhub-primary mr-4 flex h-8 w-8 flex-row items-center justify-center rounded-full">
                 <UserPlusIcon className="h-5 w-5" />
               </div>
-              <span className="text-sm">
+              <span className="text-sm font-medium">
                 <Translated i18nKey="addAnother" namespace="accounts" />
               </span>
             </div>

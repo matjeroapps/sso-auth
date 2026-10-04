@@ -16,11 +16,11 @@ export default async function Page(props: { searchParams: Promise<any> }) {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="success.title" namespace="logout" />
         </h1>
-        <p className="ztdl-p mb-6 block">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="success.description" namespace="logout" />
         </p>
       </div>

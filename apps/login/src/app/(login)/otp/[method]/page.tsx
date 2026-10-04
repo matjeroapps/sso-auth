@@ -2,7 +2,6 @@ import { Alert } from "@/components/alert";
 import { DynamicTheme } from "@/components/dynamic-theme";
 import { LoginOTP } from "@/components/login-otp";
 import { Translated } from "@/components/translated";
-import { UserAvatar } from "@/components/user-avatar";
 import { getSessionCookieById } from "@/lib/cookies";
 import { getPublicHost } from "@/lib/server/host";
 import { getServiceConfig } from "@/lib/service-url";
@@ -69,42 +68,25 @@ export default async function Page(props: {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
-          <Translated i18nKey="verify.title" namespace="otp" />
+      <div className="flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
+          {method === "email" && "Check your email"}
+          {method === "sms" && "Check your phone"}
+          {method === "time-based" && "Enter your code"}
         </h1>
-        {method === "time-based" && (
-          <p className="ztdl-p">
-            <Translated i18nKey="verify.totpDescription" namespace="otp" />
+        <div className="flex items-center gap-2">
+          <p className="font-body text-matjerhub-muted-foreground text-base font-medium">
+            {loginName ?? session?.factors?.user?.loginName}
           </p>
-        )}
-        {method === "sms" && (
-          <p className="ztdl-p">
-            <Translated i18nKey="verify.smsDescription" namespace="otp" />
-          </p>
-        )}
-        {method === "email" && (
-          <p className="ztdl-p">
-            <Translated i18nKey="verify.emailDescription" namespace="otp" />
-          </p>
-        )}
+        </div>
 
         {!session && (
-          <div className="py-4">
+          <div className="w-full py-4">
             <Alert>
               {/* context was provided but the session could not be resolved (cookie missing, invalid or expired) */}
               <Translated i18nKey={loginName || sessionId ? "sessionExpired" : "unknownContext"} namespace="error" />
             </Alert>
           </div>
-        )}
-
-        {session && (
-          <UserAvatar
-            loginName={loginName ?? session.factors?.user?.loginName}
-            displayName={session.factors?.user?.displayName}
-            showDropdown
-            searchParams={searchParams}
-          ></UserAvatar>
         )}
       </div>
 

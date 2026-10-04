@@ -67,5 +67,6 @@
       ],
       "cache": true
     }
-  }
+  },
+  "analytics": false
 }

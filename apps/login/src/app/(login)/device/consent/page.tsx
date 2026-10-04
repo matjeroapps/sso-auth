@@ -56,12 +56,12 @@ export default async function Page(props: { searchParams: Promise<Record<string 
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="request.title" namespace="device" data={{ appName: deviceAuthorizationRequest?.appName }} />
         </h1>
 
-        <p className="ztdl-p">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated
             i18nKey="request.description"
             namespace="device"

@@ -21,14 +21,14 @@ export default async function LinkingFailedPage(props: {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="title" namespace="idp" />
         </h1>
-        <p className="ztdl-p text-center">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="errors.linkingFailed" namespace="idp" />
         </p>
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="text-matjerhub-danger text-sm font-medium">{error}</p>}
       </div>
     </DynamicTheme>
   );

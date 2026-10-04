@@ -1,6 +1,6 @@
 "use client";
 
-import { APPEARANCE_STYLES, getComponentRoundness, getThemeConfig } from "@/lib/theme";
+import { APPEARANCE_STYLES, getThemeConfig } from "@/lib/theme";
 import { clsx } from "clsx";
 import { Loader2Icon } from "lucide-react";
 import { ButtonHTMLAttributes, DetailedHTMLProps, forwardRef } from "react";
@@ -15,7 +15,7 @@ export type SignInWithIdentityProviderProps = DetailedHTMLProps<
 };
 
 // Helper function to get default IDP button appearance from centralized theme system
-function getDefaultIdpButtonAppearance(): string {
+function _getDefaultIdpButtonAppearance(): string {
   const themeConfig = getThemeConfig();
   const appearance = APPEARANCE_STYLES[themeConfig.appearance];
   return appearance?.["idp-button"] || "border border-divider-light dark:border-divider-dark"; // Fallback to basic border
@@ -23,8 +23,6 @@ function getDefaultIdpButtonAppearance(): string {
 
 export const BaseButton = forwardRef<HTMLButtonElement, SignInWithIdentityProviderProps>(function BaseButton(props, ref) {
   const formStatus = useFormStatus();
-  const buttonRoundness = getComponentRoundness("button");
-  const idpButtonAppearance = getDefaultIdpButtonAppearance();
 
   return (
     <button
@@ -33,16 +31,16 @@ export const BaseButton = forwardRef<HTMLButtonElement, SignInWithIdentityProvid
       ref={ref}
       disabled={formStatus.pending}
       className={clsx(
-        `text-text-light-500 focus:border-primary-light-500 dark:text-text-dark-500 focus:dark:border-primary-dark-500 flex flex-1 cursor-pointer flex-row items-center px-4 text-sm transition-all outline-none hover:border-black hover:dark:border-white`,
-        buttonRoundness,
-        idpButtonAppearance,
-        `bg-background-light-400 dark:bg-background-dark-500`, // Keep background as fallback for non-glass themes
+        "flex h-12 flex-1 cursor-pointer flex-row items-center px-4 text-sm font-medium transition-colors outline-none",
+        "bg-matjerhub-surface text-matjerhub-foreground border-matjerhub-border rounded-xl border",
+        "hover:bg-matjerhub-surface-muted focus:border-matjerhub-primary focus:ring-matjerhub-primary/20 focus:ring-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         props.className,
       )}
     >
-      <div className="flex flex-1 items-center justify-between gap-4">
-        <div className="flex flex-1 flex-row items-center">{props.children}</div>
-        {formStatus.pending && <Loader2Icon className="h-4 w-4 animate-spin" />}
+      <div className="flex flex-1 items-center justify-center gap-4">
+        <div className="flex flex-row items-center">{props.children}</div>
+        {formStatus.pending && <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />}
       </div>
     </button>
   );

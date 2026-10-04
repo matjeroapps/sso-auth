@@ -1,6 +1,5 @@
 import { DynamicTheme } from "@/components/dynamic-theme";
 import { Translated } from "@/components/translated";
-import { UserAvatar } from "@/components/user-avatar";
 import { VerifySuccessContinue } from "@/components/verify-success-continue";
 import { getServiceConfig } from "@/lib/service-url";
 import { loadMostRecentSession } from "@/lib/session";
@@ -29,12 +28,12 @@ export default async function Page(props: { searchParams: Promise<any> }) {
   const userResponse = await getUserByID({ serviceConfig, userId: id });
 
   let user: User | undefined;
-  let human: HumanUser | undefined;
+  let _human: HumanUser | undefined;
 
   if (userResponse) {
     user = userResponse.user;
     if (user?.type.case === "human") {
-      human = user.type.value as HumanUser;
+      _human = user.type.value as HumanUser;
     }
   }
 
@@ -54,26 +53,18 @@ export default async function Page(props: { searchParams: Promise<any> }) {
 
   return (
     <DynamicTheme branding={branding}>
-      <div className="flex flex-col space-y-4">
-        <h1>
+      <div className="mb-6 flex flex-col items-center space-y-2 text-center">
+        <h1 className="font-heading text-matjerhub-foreground text-3xl font-bold tracking-tight">
           <Translated i18nKey="successTitle" namespace="verify" />
         </h1>
-        <p className="ztdl-p mb-6 block">
+        <p className="font-body text-matjerhub-muted-foreground text-base">
           <Translated i18nKey="successDescription" namespace="verify" />
         </p>
-
-        {sessionFactors ? (
-          <UserAvatar
-            loginName={loginName ?? sessionFactors.factors?.user?.loginName}
-            displayName={sessionFactors.factors?.user?.displayName}
-            showDropdown
-            searchParams={searchParams}
-          ></UserAvatar>
-        ) : (
-          user && (
-            <UserAvatar loginName={user.preferredLoginName} displayName={human?.profile?.displayName} showDropdown={false} />
-          )
-        )}
+        <div className="flex items-center gap-2 pt-2">
+          <p className="font-body text-matjerhub-muted-foreground text-base font-medium">
+            {loginName ?? sessionFactors?.factors?.user?.loginName ?? user?.preferredLoginName}
+          </p>
+        </div>
       </div>
       <div className="w-full">{continueUrl && <VerifySuccessContinue continueUrl={continueUrl} />}</div>
     </DynamicTheme>
