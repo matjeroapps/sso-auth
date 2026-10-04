@@ -26,6 +26,9 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 # Final stage: Creates a minimal container image with just the Zitadel binary and necessary files
 FROM scratch AS final
 
+LABEL org.opencontainers.image.title="MatjerHub SSO API" \
+      org.opencontainers.image.description="MatjerHub-owned OIDC API built from the sso-auth source repository"
+
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 COPY --from=builder /app/zitadel /app/zitadel

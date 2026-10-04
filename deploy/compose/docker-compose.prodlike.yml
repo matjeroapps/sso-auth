@@ -3,7 +3,8 @@ x-zitadel-db-env: &zitadel-db-env
 
 services:
   zitadel-init:
-    image: ghcr.io/zitadel/zitadel:${ZITADEL_VERSION}
+    image: ${SSO_AUTH_API_IMAGE:-matjerhub/sso-auth-api:local}
+    pull_policy: ${SSO_AUTH_PULL_POLICY:-never}
     restart: "no"
     command: init
     environment:
@@ -15,7 +16,8 @@ services:
       - zitadel
 
   zitadel-setup:
-    image: ghcr.io/zitadel/zitadel:${ZITADEL_VERSION}
+    image: ${SSO_AUTH_API_IMAGE:-matjerhub/sso-auth-api:local}
+    pull_policy: ${SSO_AUTH_PULL_POLICY:-never}
     restart: "no"
     command: setup --masterkey "${ZITADEL_MASTERKEY}"
     environment:

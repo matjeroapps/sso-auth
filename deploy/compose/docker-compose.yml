@@ -29,7 +29,8 @@ services:
         condition: service_healthy
 
   zitadel-api:
-    image: ghcr.io/zitadel/zitadel:${ZITADEL_VERSION}
+    image: ${SSO_AUTH_API_IMAGE:-matjerhub/sso-auth-api:local}
+    pull_policy: ${SSO_AUTH_PULL_POLICY:-never}
     restart: unless-stopped
     user: "0"
     command: start-from-init --masterkey "${ZITADEL_MASTERKEY}"
@@ -121,7 +122,8 @@ services:
       - traefik.http.routers.zitadel-canonical-websecure.priority=100
 
   zitadel-login:
-    image: ghcr.io/zitadel/zitadel-login:${ZITADEL_VERSION}
+    image: ${SSO_AUTH_LOGIN_IMAGE:-matjerhub/sso-auth-login:local}
+    pull_policy: ${SSO_AUTH_PULL_POLICY:-never}
     restart: unless-stopped
     user: "0"
     environment:

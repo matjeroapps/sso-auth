@@ -1,4 +1,4 @@
-# ZITADEL Docker Compose — Developer Reference
+# MatjerHub SSO Docker Compose — Developer Reference
 
 > **User-facing documentation:** [zitadel.com/docs/self-hosting/deploy/compose](https://zitadel.com/docs/self-hosting/deploy/compose)
 >
@@ -24,6 +24,21 @@
 
 Optional services via profiles: `redis` (`cache`), `otel-collector` (`observability`).
 
+The API and Login UI are two runtime images built from this single `sso-auth`
+repository. Local development never pulls the upstream ZITADEL application
+images. Build and start the stack with:
+
+```sh
+pnpm nx run @zitadel/compose:local-up
+```
+
+The images default to `matjerhub/sso-auth-api:local` and
+`matjerhub/sso-auth-login:local`. A production deployment can point
+`SSO_AUTH_API_IMAGE` and `SSO_AUTH_LOGIN_IMAGE` at Docker Hub tags without
+changing the Compose service topology. Local Compose also defaults
+`SSO_AUTH_PULL_POLICY` to `never`; production should set it to `missing` or
+`always` after the images are published.
+
 ## File Conventions
 
 | File | Role | Notes |
@@ -33,12 +48,12 @@ Optional services via profiles: `redis` (`cache`), `otel-collector` (`observabil
 | `docker-compose.mode-external-tls.yml` | TLS overlay: upstream LB terminates TLS | Enables forwarded headers |
 | `docker-compose.mode-local-tls.yml` | TLS overlay: self-signed certs | Mounts `./certs/` and `traefik-local-tls.yml` |
 | `docker-compose.prodlike.yml` | Init/setup/start split | Uses YAML anchors for shared DB env |
-| `docker-compose.test.yml` | CI smoke test overlay | Overrides images to `:local` tags |
+| `docker-compose.test.yml` | CI smoke test overlay | Adds deterministic first-instance test settings |
 | `.env.example` | User-facing config template | Copy to `.env` before first run |
 | `.env.test` | CI-only config | Used by NX targets: `test-run`, `test-e2e`, `test-full`, `stop` |
 | `otel-collector-config.yaml` | OTEL Collector pipeline config | Logs traces to stdout; configure `OTEL_BACKEND_ENDPOINT` to forward to a backend |
 | `traefik-local-tls.yml` | Traefik dynamic config for local certs | Referenced by local-tls overlay |
-| `project.json` | NX project definition | Targets: `test-config`, `test-run`, `test-e2e`, `test`, `test-full`, `stop` |
+| `project.json` | NX project definition | Targets include `local-build`, `local-up`, `local-down`, and the test pipeline |
 | `AGENTS.md` | AI agent instructions for this directory | |
 
 ## Routing Rules
@@ -72,6 +87,9 @@ Local NX targets for testing the compose stack:
 
 | Target | What it does | Requires Docker? |
 |--------|-------------|------------------|
+| `local-build` | Builds the API and Login images from this checkout | Yes |
+| `local-up` | Runs `local-build`, validates Compose, and starts the complete local stack | Yes |
+| `local-down` | Stops the local stack while preserving its database volume | Yes |
 | `test-config` | Validates all overlay combinations parse with `docker compose config` | No (just the CLI) |
 | `test-run` | Builds local images (`@zitadel/api:pack` + `@zitadel/login:pack`), starts the stack with `docker compose up --wait` | Yes |
 | `test-e2e` | Runs the full Playwright suite (`wiring.spec.ts` + `smoke.spec.ts`) against `localhost:8888` through Traefik: per-service wiring checks (login, console, OIDC, SAML, API v1 REST, gRPC h2c, gRPC-web, API v2 REST HTTP/1.1 + HTTP/2) and the browser login flow | Yes (stack must be running) |
