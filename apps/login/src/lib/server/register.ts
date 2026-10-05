@@ -1,8 +1,16 @@
 "use server";
 
 import { createSessionAndUpdateCookie, createSessionForIdpAndUpdateCookie } from "@/lib/server/cookie";
-import { addHumanUser, addIDPLink, getLoginSettings, getUserByID, listAuthenticationMethodTypes } from "@/lib/zitadel";
+import {
+  addHumanUser,
+  addIDPLink,
+  getAuthRequest,
+  getLoginSettings,
+  getUserByID,
+  listAuthenticationMethodTypes,
+} from "@/lib/zitadel";
 import { Code, ConnectError, Duration, create } from "@zitadel/client";
+import { AddUserGrantRequestSchema, ManagementService } from "@zitadel/proto/zitadel/management_pb";
 import { Factors } from "@zitadel/proto/zitadel/session/v2/session_pb";
 import { Checks, ChecksJson, ChecksSchema } from "@zitadel/proto/zitadel/session/v2/session_service_pb";
 import crypto from "crypto";
@@ -11,6 +19,7 @@ import { cookies, headers } from "next/headers";
 import { completeFlowOrGetUrl } from "../client";
 import { getOrSetFingerprintId } from "../fingerprint";
 import { createLogger } from "../logger";
+import { createServiceForHost } from "../service";
 import { getServiceConfig } from "../service-url";
 import { checkEmailVerification, checkMFAFactors } from "../verify-helper";
 
@@ -18,6 +27,92 @@ const logger = createLogger("register");
 
 const MAX_SESSION_RETRIES = 3;
 const RETRY_DELAYS_MS = [500, 1000, 2000];
+
+type RegistrationGrant = {
+  projectId: string;
+  roleKey: string;
+  clientId: string;
+};
+
+function firstConfigured(...values: Array<string | undefined>): string {
+  return values.find((value) => !!value?.trim())?.trim() ?? "";
+}
+
+/**
+ * Resolve the role a self-registered user should receive from the OIDC
+ * application that initiated the flow. Registration is intentionally
+ * client-scoped: a merchant registration can receive `seller_owner`, while a
+ * supplier registration can receive `supplier_owner`; no role is inferred
+ * from user-controlled form fields.
+ */
+async function resolveRegistrationGrant(
+  serviceConfig: Parameters<typeof getAuthRequest>[0]["serviceConfig"],
+  requestId: string | undefined,
+): Promise<RegistrationGrant | undefined> {
+  if (!requestId?.startsWith("oidc_")) {
+    return undefined;
+  }
+
+  const { authRequest } = await getAuthRequest({
+    serviceConfig,
+    authRequestId: requestId.slice("oidc_".length),
+  });
+  const clientId = authRequest?.clientId;
+  if (!clientId) {
+    return undefined;
+  }
+
+  const mappings = [
+    {
+      clientId: firstConfigured(process.env.MATJERHUB_SELLER_CLIENT_ID, process.env.ZITADEL_SELLER_CLIENT_ID),
+      projectId: firstConfigured(process.env.MATJERHUB_SELLER_PROJECT_ID, process.env.ZITADEL_SELLER_PROJECT_ID),
+      roleKey: firstConfigured(process.env.MATJERHUB_SELLER_REGISTRATION_ROLE, "seller_owner"),
+    },
+    {
+      clientId: firstConfigured(process.env.MATJERHUB_SUPPLIER_CLIENT_ID, process.env.ZITADEL_SUPPLIER_CLIENT_ID),
+      projectId: firstConfigured(process.env.MATJERHUB_SUPPLIER_PROJECT_ID, process.env.ZITADEL_SUPPLIER_PROJECT_ID),
+      roleKey: firstConfigured(process.env.MATJERHUB_SUPPLIER_REGISTRATION_ROLE, "supplier_owner"),
+    },
+  ];
+
+  const mapping = mappings.find((candidate) => candidate.clientId && candidate.clientId === clientId);
+  if (!mapping?.projectId || !mapping.roleKey) {
+    return undefined;
+  }
+
+  return {
+    clientId,
+    projectId: mapping.projectId,
+    roleKey: mapping.roleKey,
+  };
+}
+
+async function ensureRegistrationGrant(
+  serviceConfig: Parameters<typeof getAuthRequest>[0]["serviceConfig"],
+  userId: string,
+  requestId: string | undefined,
+): Promise<void> {
+  const grant = await resolveRegistrationGrant(serviceConfig, requestId);
+  if (!grant) {
+    return;
+  }
+
+  const managementService = await createServiceForHost(ManagementService, serviceConfig);
+  await managementService.addUserGrant(
+    create(AddUserGrantRequestSchema, {
+      userId,
+      projectId: grant.projectId,
+      roleKeys: [grant.roleKey],
+    }),
+    {},
+  );
+
+  logger.info("Assigned registration role for OIDC client", {
+    userId,
+    clientId: grant.clientId,
+    roleKey: grant.roleKey,
+  });
+}
 
 /**
  * After user creation, backend projections (users, login_names) may not be updated yet.
@@ -94,6 +189,22 @@ export async function registerUser(
 
   if (!addResponse) {
     return { error: t("errors.couldNotCreateUser") };
+  }
+
+  // The login UI creates users through the UserService API, so it does not
+  // automatically execute the native registration post-creation action. Add a
+  // scoped project role before completing the OIDC callback when the request
+  // came from a configured MatjerHub portal. Failures are logged and allowed
+  // to reach the callback, where they are rendered as an actionable access
+  // message instead of an opaque "unknown error".
+  try {
+    await ensureRegistrationGrant(serviceConfig, addResponse.userId, command.requestId);
+  } catch (error) {
+    logger.error("Failed to assign registration project role", {
+      userId: addResponse.userId,
+      requestId: command.requestId,
+      error,
+    });
   }
 
   let checkPayload: any = {
@@ -247,6 +358,16 @@ export async function registerUserAndLinkToIDP(
 
   if (!idpLink) {
     return { error: t("errors.couldNotLinkIDP") };
+  }
+
+  try {
+    await ensureRegistrationGrant(serviceConfig, addUserResponse.userId, command.requestId);
+  } catch (error) {
+    logger.error("Failed to assign registration project role after IDP registration", {
+      userId: addUserResponse.userId,
+      requestId: command.requestId,
+      error,
+    });
   }
 
   const session = await createSessionForIdpAndUpdateCookie({

@@ -8,6 +8,25 @@ import { CreateCallbackRequestSchema, SessionSchema } from "@zitadel/proto/zitad
 import { Session } from "@zitadel/proto/zitadel/session/v2/session_pb";
 import { isSessionValid } from "./session";
 
+function isGrantRequiredError(error: unknown): boolean {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message?: unknown }).message ?? "")
+        : String(error ?? "");
+
+  return /GrantRequired|grant required|grant_required/i.test(message);
+}
+
+function oidcCompletionError(error: unknown): string {
+  if (isGrantRequiredError(error)) {
+    return "This account is not authorized for this application yet. If you just registered, start again from the correct portal or contact an administrator.";
+  }
+
+  return "We couldn't complete sign-in. Please try again.";
+}
+
 type LoginWithOIDCAndSession = {
   serviceConfig: ServiceConfig;
   authRequest: string;
@@ -71,7 +90,7 @@ export async function loginWithOIDCAndSession({
           }
           return { redirect: callbackUrl };
         } else {
-          return { error: "An error occurred!" };
+          return { error: "The authentication service did not return a callback URL. Please try again." };
         }
       } catch (error: unknown) {
         // handle already handled gracefully as these could come up if old emails with requestId are used (reset password, register emails etc.)
@@ -99,7 +118,7 @@ export async function loginWithOIDCAndSession({
           }
           return { redirect: signedinUrl + "?" + params.toString() };
         } else {
-          return { error: "Unknown error occurred" };
+          return { error: oidcCompletionError(error) };
         }
       }
     }

@@ -171,7 +171,7 @@ describe("loginWithOIDCAndSession", () => {
     }
   });
 
-  it("should return unknown error for non-code-9 errors", async () => {
+  it("should return a safe retry error for non-code-9 errors", async () => {
     vi.mocked(sessionModule.isSessionValid).mockResolvedValue(true);
     vi.mocked(zitadelModule.createCallback).mockRejectedValue({
       code: 13,
@@ -186,7 +186,28 @@ describe("loginWithOIDCAndSession", () => {
       sessionCookies: mockCookies,
     });
 
-    expect(result).toEqual({ error: "Unknown error occurred" });
+    expect(result).toEqual({ error: "We couldn't complete sign-in. Please try again." });
+  });
+
+  it("should explain when the account has no application grant", async () => {
+    vi.mocked(sessionModule.isSessionValid).mockResolvedValue(true);
+    vi.mocked(zitadelModule.createCallback).mockRejectedValue({
+      code: 7,
+      message: "Errors.User.GrantRequired",
+    });
+
+    const result = await loginWithOIDCAndSession({
+      serviceConfig: {} as any,
+      authRequest: mockAuthRequest,
+      sessionId: mockSessionId,
+      sessions: mockSessions,
+      sessionCookies: mockCookies,
+    });
+
+    expect(result).toEqual({
+      error:
+        "This account is not authorized for this application yet. If you just registered, start again from the correct portal or contact an administrator.",
+    });
   });
 
   it("should reject javascript: defaultRedirectUri in FailedPrecondition path (XSS prevention)", async () => {

@@ -1,6 +1,7 @@
 import { createClientFor } from "@zitadel/client";
 import { IdentityProviderService } from "@zitadel/proto/zitadel/idp/v2/idp_service_pb";
 import { InternalPermissionService } from "@zitadel/proto/zitadel/internal_permission/v2/internal_permission_service_pb";
+import { ManagementService } from "@zitadel/proto/zitadel/management_pb";
 import { OIDCService } from "@zitadel/proto/zitadel/oidc/v2/oidc_service_pb";
 import { OrganizationService } from "@zitadel/proto/zitadel/org/v2/org_service_pb";
 import { SAMLService } from "@zitadel/proto/zitadel/saml/v2/saml_service_pb";
@@ -19,7 +20,8 @@ type ServiceClass =
   | typeof OIDCService
   | typeof SettingsService
   | typeof SAMLService
-  | typeof InternalPermissionService;
+  | typeof InternalPermissionService
+  | typeof ManagementService;
 
 export async function createServiceForHost<T extends ServiceClass>(service: T, serviceConfig: ServiceConfig) {
   let token;
